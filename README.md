@@ -1,0 +1,1 @@
+# TypeScript-Backup-Manager\n\n## Overview\nEnterprise-grade backup manager implementation in TypeScript.\n\n## Quick Start (1-Click Build)\n\n```bash\ngit clone https://github.com/skylerblue333/TypeScript-Backup-Manager.git\ncd TypeScript-Backup-Manager\n# Build instructions depend on the language\n```\n
