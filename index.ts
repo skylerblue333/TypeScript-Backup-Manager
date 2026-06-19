@@ -1,1 +1,0 @@
-console.log('Starting TypeScript-Backup-Manager service...');\n
