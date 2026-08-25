@@ -72,5 +72,12 @@ if (require.main === module) {
   app.listen(8080, '0.0.0.0', () => console.log('Sky Backup Plan Registry listening on :8080'));
 }
 
+export {
+  assessBackupEvidence,
+  normalizeBackupControlPolicy,
+  type BackupControlAssessment,
+  type BackupControlPolicy,
+  type BackupEvidence,
+} from './control';
 export { MAX_PLANS, plans };
 export default app;
