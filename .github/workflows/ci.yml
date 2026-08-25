@@ -1,12 +1,40 @@
-name: CI
-on: [push, pull_request]
+name: backup-plan-ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - run: npm ci
-      - run: npm test
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+      - name: Build
+        run: npm run build
+      - name: Tests
+        run: npm test
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Build image
+        run: docker build -t sky-backup-plan-registry .
+      - name: Verify non-root image
+        run: test "$(docker run --rm --entrypoint=id sky-backup-plan-registry -u)" != "0"
+      - name: Smoke health
+        run: |
+          docker run -d --rm --name sky-backup-plan-registry -p 18080:8080 sky-backup-plan-registry
+          trap 'docker stop sky-backup-plan-registry >/dev/null 2>&1 || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:18080/healthz; then exit 0; fi
+            sleep 1
+          done
+          docker logs sky-backup-plan-registry
+          exit 1
